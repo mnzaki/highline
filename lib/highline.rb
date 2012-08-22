@@ -175,7 +175,7 @@ class HighLine
   #
   def initialize( input = $stdin, output = $stdout,
                   wrap_at = nil, page_at = nil )
-    super()
+    super(input, output)
     @input   = input
     @output  = output
     
@@ -783,11 +783,12 @@ class HighLine
 
       answer
     else
+      raise EOFError, "The input stream is exhausted." if @@track_eof and
+                                                          @input.eof?
       if JRUBY
-        raw_answer = @java_console.readLine(@question.question, nil)
+        raw_answer = @java_console.readLine(@question.question,
+          @question.echo ? nil : 0)
       else
-        raise EOFError, "The input stream is exhausted." if @@track_eof and
-                                                            @input.eof?
         raw_answer = @input.gets
       end
 
